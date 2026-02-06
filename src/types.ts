@@ -1,5 +1,5 @@
 /**
- * Noether Keeper Bot - Type Definitions
+ * Noether Tracking Bot - Type Definitions
  */
 
 // Direction enum matching contract
@@ -56,8 +56,8 @@ export interface PriceData {
   timestamp: number;
 }
 
-// Keeper statistics
-export interface KeeperStats {
+// Tracker statistics
+export interface TrackerStats {
   startTime: Date;
   oracleUpdates: number;
   liquidationsExecuted: number;
@@ -83,8 +83,8 @@ export interface AssetConfig {
   decimals: number;
 }
 
-// Keeper configuration
-export interface KeeperConfig {
+// Tracker configuration
+export interface TrackerConfig {
   // Network
   network: 'testnet' | 'mainnet';
   rpcUrl: string;
