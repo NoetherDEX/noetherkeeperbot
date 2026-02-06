@@ -1,11 +1,11 @@
 /**
- * Noether Keeper Bot - Configuration
+ * Noether Tracking Bot - Configuration
  */
 
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
-import { KeeperConfig, AssetConfig } from './types';
+import { TrackerConfig, AssetConfig } from './types';
 
 // Load .env from project root
 const projectRoot = path.resolve(__dirname, '../');
@@ -21,7 +21,7 @@ const DEFAULT_ASSETS: AssetConfig[] = [
 /**
  * Load and validate configuration
  */
-export function loadConfig(): KeeperConfig {
+export function loadConfig(): TrackerConfig {
   // Try to load contracts.json
   const contractsPath = path.join(projectRoot, 'contracts.json');
   let contracts: any = {};
@@ -32,12 +32,12 @@ export function loadConfig(): KeeperConfig {
   }
 
   // Validate required environment variables
-  const secretKey = process.env.KEEPER_SECRET_KEY || process.env.ORACLE_SECRET_KEY || process.env.ADMIN_SECRET_KEY;
+  const secretKey = process.env.TRACKER_SECRET_KEY || process.env.ORACLE_SECRET_KEY || process.env.ADMIN_SECRET_KEY;
   if (!secretKey) {
-    throw new Error('❌ KEEPER_SECRET_KEY, ORACLE_SECRET_KEY, or ADMIN_SECRET_KEY must be set in .env');
+    throw new Error('❌ TRACKER_SECRET_KEY, ORACLE_SECRET_KEY, or ADMIN_SECRET_KEY must be set in .env');
   }
 
-  const config: KeeperConfig = {
+  const config: TrackerConfig = {
     // Network configuration
     network: (process.env.NETWORK || 'testnet') as 'testnet' | 'mainnet',
     rpcUrl: process.env.RPC_URL || 'https://soroban-testnet.stellar.org',
