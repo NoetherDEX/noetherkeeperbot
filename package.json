@@ -1,7 +1,7 @@
 {
-  "name": "noether-tracker",
+  "name": "noether-keeper",
   "version": "2.0.0",
-  "description": "Unified Tracking Bot for Noether PerpDex - Oracle updates, liquidations, and order execution",
+  "description": "Unified Keeper Bot for Noether PerpDex - Oracle updates, liquidations, and order execution",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -24,8 +24,8 @@
     "soroban",
     "defi",
     "perpetuals",
-    "tracker",
-    "tracking",
+    "keeper",
+    "keeper-bot",
     "liquidation",
     "limit-orders"
   ],

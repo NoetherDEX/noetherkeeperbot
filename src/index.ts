@@ -1,44 +1,44 @@
 /**
- * Noether Tracking Bot
+ * Noether Keeper Bot
  *
- * A unified tracking bot that handles:
+ * A unified keeper bot that handles:
  * 1. Oracle price updates (fetches from Binance, updates mock oracle)
  * 2. Position liquidations (monitors positions, liquidates when underwater)
  * 3. Order executions (limit orders, stop-loss, take-profit)
  * 4. Funding rate application (hourly)
  *
  * Usage:
- *   npm start        - Start the tracking bot
+ *   npm start        - Start the keeper bot
  *   npm run dev      - Start with auto-reload
  */
 
 import { loadConfig } from './config';
 import { StellarClient } from './stellar';
-import { TrackerConfig, TrackerStats, PriceData, AssetConfig } from './types';
+import { KeeperConfig, KeeperStats, PriceData, AssetConfig } from './types';
 
 // ASCII art banner
 const BANNER = `
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                               ║
-║     _   _            _   _               _____              _                 ║
-║    | \\ | | ___   ___| |_| |__   ___ _ __|_   _| __ __ _  ___| | _____ _ __    ║
-║    |  \\| |/ _ \\ / _ \\ __| '_ \\ / _ \\ '__| | || '__/ _\` |/ __| |/ / _ \\ '__|   ║
-║    | |\\  | (_) |  __/ |_| | | |  __/ |    | || | | (_| | (__|   <  __/ |      ║
-║    |_| \\_|\\___/ \\___|\\__|_| |_|\\___|_|    |_||_|  \\__,_|\\___|_|\\_\\___|_|      ║
-║                                                                               ║
-║                   Unified Tracking Bot v2.0                                   ║
-║           Oracle Updates | Liquidations | Order Execution                     ║
+║     _   _            _   _              _  __                                 ║
+║    | \\ | | ___   ___| |_| |__   ___ _ __| |/ /___  ___ _ __   ___ _ __        ║
+║    |  \\| |/ _ \\ / _ \\ __| '_ \\ / _ \\ '__| ' // _ \\/ _ \\ '_ \\ / _ \\ '__|       ║
+║    | |\\  | (_) |  __/ |_| | | |  __/ |  | . \\  __/  __/ |_) |  __/ |          ║
+║    |_| \\_|\\___/ \\___|\\___|_| |_|\\___|_|  |_|\\_\\___|\\___|  .__/ \\___|_|        ║
+║                                                          |_|                  ║
+║                            Unified Keeper Bot v2.0                            ║
+║                Oracle Updates | Liquidations | Order Execution                ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 `;
 
 const PRECISION = BigInt(10_000_000); // 7 decimals
 
-class TrackingBot {
-  private config: TrackerConfig;
+class KeeperBot {
+  private config: KeeperConfig;
   private stellar: StellarClient;
   private isRunning: boolean = false;
-  private stats: TrackerStats;
+  private stats: KeeperStats;
   private lastOracleUpdate: number = 0;
   private lastFundingApplication: number = 0;
   private currentPrices: Map<string, PriceData> = new Map();
@@ -59,11 +59,11 @@ class TrackingBot {
   }
 
   /**
-   * Start the tracking bot
+   * Start the keeper bot
    */
   async start(): Promise<void> {
     console.log(BANNER);
-    console.log('Starting Noether Tracking Bot...\n');
+    console.log('Starting Noether Keeper Bot...\n');
 
     // Validate configuration
     if (!this.config.marketContractId) {
@@ -81,7 +81,7 @@ class TrackingBot {
     console.log('Configuration:');
     console.log(`  Network:           ${this.config.network}`);
     console.log(`  RPC URL:           ${this.config.rpcUrl}`);
-    console.log(`  Tracker Address:   ${this.stellar.publicKey}`);
+    console.log(`  Keeper Address:    ${this.stellar.publicKey}`);
     console.log(`  Market Contract:   ${this.config.marketContractId.slice(0, 8)}...`);
     console.log(`  Oracle Contract:   ${this.config.oracleContractId.slice(0, 8)}...`);
     console.log(`  Poll Interval:     ${this.config.pollIntervalMs}ms`);
@@ -95,15 +95,15 @@ class TrackingBot {
     process.on('SIGINT', () => this.stop());
     process.on('SIGTERM', () => this.stop());
 
-    console.log('🚀 Tracking bot started. Monitoring...\n');
+    console.log('🚀 Keeper bot started. Monitoring...\n');
     console.log('═'.repeat(80) + '\n');
 
     // Main loop
     while (this.isRunning) {
       try {
-        await this.runTrackerCycle();
+        await this.runKeeperCycle();
       } catch (error) {
-        console.error('Error in tracker loop:', error);
+        console.error('Error in keeper loop:', error);
         this.stats.errors++;
       }
 
@@ -112,11 +112,11 @@ class TrackingBot {
   }
 
   /**
-   * Stop the tracking bot
+   * Stop the keeper bot
    */
   stop(): void {
     console.log('\n\n' + '═'.repeat(80));
-    console.log('Shutting down tracking bot...\n');
+    console.log('Shutting down keeper bot...\n');
     console.log('Session Statistics:');
     console.log(`  Runtime:               ${this.formatDuration(Date.now() - this.stats.startTime.getTime())}`);
     console.log(`  Oracle Updates:        ${this.stats.oracleUpdates}`);
@@ -132,9 +132,9 @@ class TrackingBot {
   }
 
   /**
-   * Run a single tracker cycle
+   * Run a single keeper cycle
    */
-  private async runTrackerCycle(): Promise<void> {
+  private async runKeeperCycle(): Promise<void> {
     const now = Date.now();
     const timestamp = new Date().toLocaleTimeString();
 
@@ -334,7 +334,7 @@ class TrackingBot {
         this.stats.totalRewardsEarned += result.reward!;
         console.log(`   ✅ Order executed successfully!`);
         console.log(`   Transaction: ${result.txHash}`);
-        console.log(`   Tracker fee: ${this.formatAmount(result.reward!)} USDC`);
+        console.log(`   Keeper fee: ${this.formatAmount(result.reward!)} USDC`);
       }
     } else {
       // Handle PositionNotFound (Error #20) for SL/TP orders
@@ -406,8 +406,8 @@ class TrackingBot {
 
 // Entry point
 async function main(): Promise<void> {
-  const tracker = new TrackingBot();
-  await tracker.start();
+  const keeper = new KeeperBot();
+  await keeper.start();
 }
 
 main().catch((error) => {
