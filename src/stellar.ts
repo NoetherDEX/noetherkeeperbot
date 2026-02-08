@@ -1,5 +1,5 @@
 /**
- * Noether Tracking Bot - Stellar/Soroban Client
+ * Noether Keeper Bot - Stellar/Soroban Client
  *
  * Handles all blockchain interactions including:
  * - Oracle price updates
@@ -18,7 +18,7 @@ import {
   nativeToScVal,
   Account,
 } from '@stellar/stellar-sdk';
-import { TrackerConfig, Position, Order, ExecutionResult } from './types';
+import { KeeperConfig, Position, Order, ExecutionResult } from './types';
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 2000;
@@ -31,7 +31,7 @@ export class StellarClient {
   private marketContract: Contract;
   private oracleContract: Contract;
 
-  constructor(private config: TrackerConfig) {
+  constructor(private config: KeeperConfig) {
     this.server = new rpc.Server(config.rpcUrl);
     this.keypair = Keypair.fromSecret(config.secretKey);
     this.networkPassphrase = config.networkPassphrase;
